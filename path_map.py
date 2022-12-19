@@ -161,18 +161,17 @@ def get_multicast_count(all_host_dict, group_ip, source_ip):
         for local_int, local_int_details in device_details.items():
 
             try:
-                if local_int_details["Outgoing Interface"] == "Yes":
-                    if packets_forwarded_delta > 0:
-                        local_int_details.update({"Active Traffic": "Yes"})
-            except:
-                continue
-            
-            try:
                 if local_int_details["Incoming Interface"] == "Yes":
-                    print(device, local_int, packets_received_delta)
                     if packets_received_delta > 0:
                         local_int_details.update({"Active Traffic": "Yes"})
             except:
+                try:
+                    if local_int_details["Outgoing Interface"] == "Yes":
+                        if packets_forwarded_delta > 0:
+                            local_int_details.update({"Active Traffic": "Yes"})
+                except:
+                    continue
+            finally:
                 continue
 
     return all_host_dict
