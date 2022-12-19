@@ -202,8 +202,6 @@ def notate_bifurcation(all_host_dict):
 
 if __name__ == '__main__':
 
-
-
     # Builds the path
     initial_router = "SEA-CORE"
     all_host_dict = build_path(initial_router)
