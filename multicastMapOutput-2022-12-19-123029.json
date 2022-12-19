@@ -1,0 +1,75 @@
+{
+   "SEA-CORE": {
+      "Serial0/2/3:0": {
+         "Remote Hostname": "DVN-CORE",
+         "Remote Interface": "Serial0/2/3:0",
+         "Outgoing Interface": "Yes",
+         "Active Traffic": "Yes"
+      }
+   },
+   "DVN-CORE": {
+      "Serial0/2/2:0": {
+         "Remote Hostname": "MIN-CORE",
+         "Remote Interface": "Serial0/2/2:0",
+         "Outgoing Interface": "Yes",
+         "Active Traffic": "Yes"
+      },
+      "Serial0/2/3:0": {
+         "Remote Hostname": "SEA-CORE",
+         "Remote Interface": "Serial0/2/3:0",
+         "Incoming Interface": "Yes",
+         "Active Traffic": "Yes"
+      }
+   },
+   "MIN-CORE": {
+      "GigabitEthernet0/2": {
+         "Remote Hostname": "STP-PE",
+         "Remote Interface": "GigabitEthernet0/2",
+         "Outgoing Interface": "Yes",
+         "Active Traffic": "Yes"
+      },
+      "Serial0/2/2:0": {
+         "Remote Hostname": "DVN-CORE",
+         "Remote Interface": "Serial0/2/2:0",
+         "Incoming Interface": "Yes",
+         "Active Traffic": "Yes"
+      },
+      "GigabitEthernet0/0": {
+         "Remote Hostname": "MIN-PE",
+         "Remote Interface": "GigabitEthernet0/1",
+         "Outgoing Interface": "Yes",
+         "Active Traffic": "Yes"
+      },
+      "Bifurcation Point": "Yes"
+   },
+   "STP-PE": {
+      "GigabitEthernet0/2": {
+         "Remote Hostname": "MIN-CORE",
+         "Remote Interface": "GigabitEthernet0/2",
+         "Incoming Interface": "Yes",
+         "Active Traffic": "Yes"
+      },
+      "GigabitEthernet0/0": {
+         "Remote Hostname": "STP-CE",
+         "Remote Interface": "FastEthernet0/0",
+         "Outgoing Interface": "Yes",
+         "Active Traffic": "Yes"
+      }
+   },
+   "MIN-PE": {
+      "GigabitEthernet0/1": {
+         "Remote Hostname": "MIN-CORE",
+         "Remote Interface": "GigabitEthernet0/0",
+         "Incoming Interface": "Yes",
+         "Active Traffic": "Yes"
+      }
+   },
+   "STP-CE": {
+      "FastEthernet0/0": {
+         "Remote Hostname": "STP-PE",
+         "Remote Interface": "GigabitEthernet0/0",
+         "Incoming Interface": "Yes",
+         "Active Traffic": "Yes"
+      }
+   }
+}
