@@ -1,6 +1,8 @@
 import re
 import json
 import time
+import datetime
+import subprocess
 from netmiko import ConnectHandler
 
 
@@ -200,6 +202,8 @@ def notate_bifurcation(all_host_dict):
 
 if __name__ == '__main__':
 
+
+
     # Builds the path
     initial_router = "SEA-CORE"
     all_host_dict = build_path(initial_router)
@@ -215,6 +219,15 @@ if __name__ == '__main__':
     # Notates bifurcation points
     all_host_dict = notate_bifurcation(all_host_dict)
 
-    # Prints the JSON output
-    all_host_json = json.dumps(all_host_dict, indent=3)
-    print(all_host_json)
+    # Writes the JSON output
+    now = datetime.datetime.now()
+    file_name = f"multicastMapOutput-{str(now.strftime('%Y-%m-%d-%H%M%S'))}.json"
+    touch_cmd = f"touch {file_name}"
+    subprocess.Popen(touch_cmd, shell=True,
+        stdout=subprocess.PIPE, universal_newlines=True).communicate()[0]
+    perm_cmd = f"chmod 777 /home/candres/candres_scripts/multicast_tree/{file_name}"
+    subprocess.Popen(perm_cmd, shell=True,
+        stdout=subprocess.PIPE, universal_newlines=True).communicate()[0]
+    with open(f"/home/candres/candres_scripts/multicast_tree/multicastMapOutput-{str(now.strftime('%Y-%m-%d-%H%M%S'))}.json", 'a') as output:
+        output.write(json.dumps(all_host_dict, indent=3))
+
