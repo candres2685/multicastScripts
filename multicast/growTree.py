@@ -24,9 +24,9 @@ class TreeGrower():
         '''
 
         for device, device_details in all_host_dict.items():
-
+            cmd = f"show ip mroute {self.source_ip} {self.group_ip}"
             mroute_output = Network.get_router_output(self, router=device, 
-                cmd=f"show ip mroute {self.source_ip} {self.group_ip}", username=self.username, password=self.password)
+                cmd=cmd, username=self.username, password=self.password)
 
             in_reg, out_reg = ["\:\s(\S+)\,\sRPF", "\s+(\S+)\,\sFor"]
             incoming_interface_matches = re.compile(in_reg).findall(mroute_output)
@@ -45,6 +45,17 @@ class TreeGrower():
         return all_host_dict
 
 
+    def get_mroute_count(self, device):
+
+        '''
+        Returns the output of the mroute count command
+        '''
+
+        cmd = f"show ip mroute {self.source_ip} {self.group_ip} count"
+        return Network.get_router_output(self, router=device, 
+            cmd=cmd, username=self.username, password=self.password) 
+
+
     def get_multicast_count(self, all_host_dict):
 
         '''
@@ -53,13 +64,9 @@ class TreeGrower():
         
         for device, device_details in all_host_dict.items():
 
-            first_mroute_count_output = Network.get_router_output(self, router=device, 
-                cmd=f"show ip mroute {self.source_ip} {self.group_ip} count", username=self.username, password=self.password)
-
+            first_mroute_count_output = self.get_mroute_count(device)
             time.sleep(30)
-
-            second_mroute_count_output = Network.get_router_output(self, router=device, 
-                cmd=f"show ip mroute {self.source_ip} {self.group_ip} count", username=self.username, password=self.password)
+            second_mroute_count_output = self.get_mroute_count(device)
 
             mroute_count_regex = ", Packets forwarded: (\d+), Packets received: (\d+)"
 
