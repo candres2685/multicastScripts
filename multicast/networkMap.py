@@ -8,19 +8,20 @@ class Network():
     This class creates a network map using CDP
     '''
 
-    def __init__(self, initial_router):
+    def __init__(self, initial_router, username, password):
         self.initial_router = initial_router
+        self.username = username
+        self.password = password
 
-
-    def get_router_output(self, router, cmd):
+    def get_router_output(self, router, cmd, username, password):
 
         '''
         Takes in a cmd and router then returns the output
         '''
         conn_params = {
             'host': router,
-            'username': "Lab_User",
-            'password': "Lab_User",
+            'username': self.username,
+            'password': self.password,
             'banner_timeout': 60,
             'device_type': 'cisco_ios'
             }
@@ -34,7 +35,7 @@ class Network():
         '''
         Takes in a router and returns the CDP neighbors and their associated interfaces
         '''
-        cdp_output = self.get_router_output(router, "show cdp neighbors detail")
+        cdp_output = self.get_router_output(router, "show cdp neighbors detail", self.username, self.password)
         cdp_regex = "Device ID\:\s(\S+?)\.\S+\n.*\n.*\n.*\n.*Interface: (\S+)\,\D+port\)\:\s(\S+)"
         cdp_matches = re.compile(cdp_regex).findall(cdp_output)
 

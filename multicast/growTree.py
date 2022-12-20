@@ -1,7 +1,7 @@
 import re
 import time
 
-from networkMap import Network
+from multicast.networkMap import Network
 
 
 class TreeGrower():
@@ -11,10 +11,11 @@ class TreeGrower():
     '''
 
 
-    def __init__(self, group_ip, source_ip):
+    def __init__(self, group_ip, source_ip, username, password):
         self.group_ip = group_ip
         self.source_ip = source_ip
-
+        self.username = username
+        self.password = password
 
     def build_tree(self, all_host_dict):
 
@@ -24,17 +25,12 @@ class TreeGrower():
 
         for device, device_details in all_host_dict.items():
 
-            mroute_output = Network.get_router_output(
-                self,
-                router=device, 
-                cmd=f"show ip mroute {self.source_ip} {self.group_ip}"
-                )
+            mroute_output = Network.get_router_output(self, router=device, 
+                cmd=f"show ip mroute {self.source_ip} {self.group_ip}", username=self.username, password=self.password)
 
-            incoming_interface_regex = "\:\s(\S+)\,\sRPF"
-            incoming_interface_matches = re.compile(incoming_interface_regex).findall(mroute_output)
-
-            outgoing_interface_regex = "\s+(\S+)\,\sFor"
-            outgoing_interface_matches = re.compile(outgoing_interface_regex).findall(mroute_output)
+            in_reg, out_reg = ["\:\s(\S+)\,\sRPF", "\s+(\S+)\,\sFor"]
+            incoming_interface_matches = re.compile(in_reg).findall(mroute_output)
+            outgoing_interface_matches = re.compile(out_reg).findall(mroute_output)
 
             local_int_list = device_details.keys()
             for intfc in local_int_list:
@@ -58,12 +54,12 @@ class TreeGrower():
         for device, device_details in all_host_dict.items():
 
             first_mroute_count_output = Network.get_router_output(self, router=device, 
-                cmd=f"show ip mroute {self.source_ip} {self.group_ip} count")
+                cmd=f"show ip mroute {self.source_ip} {self.group_ip} count", username=self.username, password=self.password)
 
             time.sleep(30)
 
             second_mroute_count_output = Network.get_router_output(self, router=device, 
-                cmd=f"show ip mroute {self.source_ip} {self.group_ip} count")
+                cmd=f"show ip mroute {self.source_ip} {self.group_ip} count", username=self.username, password=self.password)
 
             mroute_count_regex = ", Packets forwarded: (\d+), Packets received: (\d+)"
 

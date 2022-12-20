@@ -56,17 +56,17 @@
          "Active Traffic": "Yes"
       }
    },
-   "MIN-PE": {
-      "GigabitEthernet0/1": {
-         "Remote Hostname": "MIN-CORE",
+   "STP-CE": {
+      "FastEthernet0/0": {
+         "Remote Hostname": "STP-PE",
          "Remote Interface": "GigabitEthernet0/0",
          "Incoming Interface": "Yes",
          "Active Traffic": "Yes"
       }
    },
-   "STP-CE": {
-      "FastEthernet0/0": {
-         "Remote Hostname": "STP-PE",
+   "MIN-PE": {
+      "GigabitEthernet0/1": {
+         "Remote Hostname": "MIN-CORE",
          "Remote Interface": "GigabitEthernet0/0",
          "Incoming Interface": "Yes",
          "Active Traffic": "Yes"
