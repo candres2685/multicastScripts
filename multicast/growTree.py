@@ -5,6 +5,7 @@ from multicast.networkMap import Network
 
 
 class TreeGrower():
+
     '''
     This class maps out the multicast tree and 
     notates where's there's active traffic
@@ -16,6 +17,7 @@ class TreeGrower():
         self.source_ip = source_ip
         self.username = username
         self.password = password
+
 
     def build_tree(self, all_host_dict):
 
@@ -56,6 +58,20 @@ class TreeGrower():
             cmd=cmd, username=self.username, password=self.password) 
 
 
+    def get_mrt_cnt_matches(self, fwd_slice, rec_slice, output, reg):
+
+        '''
+        Returns the mroute 'show ip mroute count' packet counts
+        '''
+
+        mroute_count_matches = re.compile(reg).findall(output)
+        if mroute_count_matches != []:
+            pkts_fwd = mroute_count_matches[0][fwd_slice]
+            pkts_rec = mroute_count_matches[0][rec_slice]
+
+        return pkts_fwd, pkts_rec
+
+
     def get_multicast_count(self, all_host_dict):
 
         '''
@@ -64,35 +80,30 @@ class TreeGrower():
         
         for device, device_details in all_host_dict.items():
 
-            first_mroute_count_output = self.get_mroute_count(device)
-            time.sleep(30)
-            second_mroute_count_output = self.get_mroute_count(device)
+            mrt_cnt_out_1 = self.get_mroute_count(device)
+            time.sleep(5)
+            mrt_cnt_out_2 = self.get_mroute_count(device)
 
-            mroute_count_regex = ", Packets forwarded: (\d+), Packets received: (\d+)"
+            mrt_reg = ", Packets forwarded: (\d+), Packets received: (\d+)"
 
-            first_mroute_count_matches = re.compile(mroute_count_regex).findall(first_mroute_count_output)
-            if first_mroute_count_matches != []:
-                first_packets_forwarded = first_mroute_count_matches[0][0]
-                first_packets_received = first_mroute_count_matches[0][1]
+            pkts_fwd_1, pkts_rec_1 = \
+                self.get_mrt_cnt_matches(0, 1, mrt_cnt_out_1, mrt_reg)
+            pkts_fwd_2, pkts_rec_2 = \
+                self.get_mrt_cnt_matches(0, 1, mrt_cnt_out_2, mrt_reg)
 
-            second_mroute_count_matches = re.compile(mroute_count_regex).findall(second_mroute_count_output)
-            if second_mroute_count_matches != []:
-                second_packets_forwarded = second_mroute_count_matches[0][0]
-                second_packets_received = second_mroute_count_matches[0][1]
-
-            packets_forwarded_delta = int(second_packets_forwarded) - int(first_packets_forwarded)
-            packets_received_delta = int(second_packets_received) - int(first_packets_received)
+            pkts_fwd_delta = int(pkts_fwd_2) - int(pkts_fwd_1)
+            pkts_rec_delta = int(pkts_rec_2) - int(pkts_rec_1)
 
             for local_int, local_int_details in device_details.items():
 
                 try:
                     if local_int_details["Incoming Interface"] == "Yes":
-                        if packets_received_delta > 0:
+                        if pkts_rec_delta > 0:
                             local_int_details.update({"Active Traffic": "Yes"})
                 except:
                     try:
                         if local_int_details["Outgoing Interface"] == "Yes":
-                            if packets_forwarded_delta > 0:
+                            if pkts_fwd_delta > 0:
                                 local_int_details.update({"Active Traffic": "Yes"})
                     except:
                         continue
